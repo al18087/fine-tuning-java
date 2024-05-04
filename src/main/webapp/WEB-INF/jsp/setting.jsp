@@ -33,8 +33,8 @@
 				<th>モデル</th>
 				<td>
 					<div>
-						<input type="radio" id="gpt-3.5-turbo" name="traning-model" value="gpt-3.5-turbo" checked>
-						<label class="h6 m-2">gpt-3.5-turbo</label>
+						<input type="radio" id="gpt-3.5-turbo" name="traning-model" value="gpt-3.5-turbo-0613" checked>
+						<label class="h6 m-2">gpt-3.5-turbo-0613</label>
 						<input type="radio" id="baggage-002" name="traning-model" value="baggage-002">
 						<label class="h6 m-2">baggage-002</label>
 						<input type="radio" id="davinci-002" name="traning-model" value="davinci-002">

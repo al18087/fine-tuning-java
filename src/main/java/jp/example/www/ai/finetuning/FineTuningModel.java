@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public enum FineTuningModel {
 
-	GPT_3_5_TURBO("gpt-3.5-turbo"),
+	GPT_3_5_TURBO("gpt-3.5-turbo-0613"),
 	
 	BAGGAGE_002("baggage_002"),
 	

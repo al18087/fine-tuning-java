@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.Duration;
-import java.util.Optional;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -14,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,6 +59,7 @@ public class SettingServlet extends HttpServlet {
 		switch (actionType) {
 		case FINE_TUNING:
 			final String uploadJsonlPath = uploadTrainingFile(request);
+			PropertiesFactory.read(request);
 			final String apiKey = PropertiesFactory.getProperty(PropertiesConst.OPENAI_API_KEY);
 			final int epochNum = Integer.parseInt(request.getParameter("epoch"));
 			final String traningModel = request.getParameter("traning-model");
@@ -83,8 +84,7 @@ public class SettingServlet extends HttpServlet {
 	
 	private String uploadTrainingFile(final HttpServletRequest request) 
 			throws IOException, ServletException {
-		final Part part = Optional.ofNullable(request.getPart("upload"))
-				.orElseThrow(() -> new IOException());
+		final Part part = request.getPart("upload");
 		final String fileName = Paths.get(part.getSubmittedFileName())
 				.getFileName().toString();
 		validateUploadTrainingFile(fileName, request);
@@ -99,9 +99,16 @@ public class SettingServlet extends HttpServlet {
 	}
 	
 	private void validateUploadTrainingFile(final String fileName, final HttpServletRequest request) {
+		if (StringUtils.isEmpty(fileName)) {
+			getLogger().error("ファイルを選択してください");
+			request.setAttribute("message", "ファイルを選択してください");
+			// TODO 例外処理
+		}
+		
 		if (!fileName.endsWith(".jsonl")) {
 			getLogger().error("jsonlファイルではありません");
 			request.setAttribute("message", "jsonlファイルではありません");
+			// TODO 例外処理
 		}
 	}
 
