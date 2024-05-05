@@ -25,6 +25,8 @@ import jp.example.www.ai.ActionType;
 import jp.example.www.ai.common.JspPageConst;
 import jp.example.www.ai.common.PropertiesConst;
 import jp.example.www.ai.common.PropertiesFactory;
+import jp.example.www.ai.exception.UploadFileException;
+import jp.example.www.ai.message.MessageType;
 
 /**
  * Servlet implementation class SettingServlet
@@ -54,40 +56,47 @@ public class SettingServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(final HttpServletRequest request, final HttpServletResponse response) 
+			throws ServletException, IOException {
 		final ActionType actionType = ActionType.getAction(request.getParameter("action"));
-		switch (actionType) {
-		case FINE_TUNING:
-			final String uploadJsonlPath = uploadTrainingFile(request);
-			PropertiesFactory.read(request);
-			final String apiKey = PropertiesFactory.getProperty(PropertiesConst.OPENAI_API_KEY);
-			final int epochNum = Integer.parseInt(request.getParameter("epoch"));
-			final String traningModel = request.getParameter("traning-model");
-			
-			final OpenAiService service = new OpenAiService(apiKey, Duration.ZERO);
-			final com.theokanning.openai.file.File jsonlFile = service
-					.uploadFile("fine-tune", uploadJsonlPath);
-			final Hyperparameters parameters = Hyperparameters.builder().nEpochs(epochNum).build();
-			final FineTuningJobRequest ftjRequest = FineTuningJobRequest.builder()
-					.model(jsonlFile.getId())
-					.trainingFile(traningModel)
-					.hyperparameters(parameters)
-					.build();
-			service.createFineTuningJob(ftjRequest);
-			
-			request.getRequestDispatcher(JspPageConst.SETTING).forward(request, response);
-			break;
-		default:
-			throw new IllegalStateException("指定されたアクションが存在しません");
+		if (actionType == ActionType.FINE_TUNING) {
+			try {
+				final String uploadJsonlPath = uploadTrainingFile(request);
+				PropertiesFactory.read(request);
+				final String apiKey = PropertiesFactory.getProperty(PropertiesConst.OPENAI_API_KEY);
+				final Integer epochNum = Integer.parseInt(request.getParameter("epoch"));
+				final String traningModel = request.getParameter("traning-model");
+				
+				final OpenAiService service = new OpenAiService(apiKey, Duration.ZERO);
+				final com.theokanning.openai.file.File jsonlFile = service
+						.uploadFile("fine-tune", uploadJsonlPath);
+				final Hyperparameters parameters = Hyperparameters.builder().nEpochs(epochNum).build();
+				final FineTuningJobRequest ftjRequest = FineTuningJobRequest.builder()
+						.model(jsonlFile.getId())
+						.trainingFile(traningModel)
+						.hyperparameters(parameters)
+						.build();
+				service.createFineTuningJob(ftjRequest);
+				
+			} catch (final NumberFormatException e) {
+				getLogger().error(MessageType.EPOCH_FORMAT_INCORRECT.getLogContent(), e);
+				request.setAttribute("message", MessageType.EPOCH_FORMAT_INCORRECT.getContent());
+			} catch (final UploadFileException e) {
+				request.setAttribute("message", e.getLocalizedMessage());
+			} finally {
+				request.getRequestDispatcher(JspPageConst.SETTING).forward(request, response);
+			}
+		} else {
+			throw new IllegalArgumentException("actionが存在しません。");
 		}
 	}
 	
 	private String uploadTrainingFile(final HttpServletRequest request) 
-			throws IOException, ServletException {
+			throws IOException, ServletException, UploadFileException {
 		final Part part = request.getPart("upload");
 		final String fileName = Paths.get(part.getSubmittedFileName())
 				.getFileName().toString();
-		validateUploadTrainingFile(fileName, request);
+		validateUploadTrainingFile(fileName);
 		final String uploadJsonlPath = new StringBuilder(
 				getServletContext().getRealPath("/WEB-INF/upload"))
 				.append(File.separator)
@@ -98,17 +107,15 @@ public class SettingServlet extends HttpServlet {
 		return uploadJsonlPath;
 	}
 	
-	private void validateUploadTrainingFile(final String fileName, final HttpServletRequest request) {
+	private void validateUploadTrainingFile(final String fileName) throws UploadFileException {
 		if (StringUtils.isEmpty(fileName)) {
-			getLogger().error("ファイルを選択してください");
-			request.setAttribute("message", "ファイルを選択してください");
-			// TODO 例外処理
+			getLogger().error(MessageType.FILE_NOT_SELECTED.getLogContent());
+			throw new UploadFileException(MessageType.FILE_NOT_SELECTED);
 		}
 		
 		if (!fileName.endsWith(".jsonl")) {
-			getLogger().error("jsonlファイルではありません");
-			request.setAttribute("message", "jsonlファイルではありません");
-			// TODO 例外処理
+			getLogger().error(MessageType.NOT_JSONL_FILE.getLogContent());
+			throw new UploadFileException(MessageType.NOT_JSONL_FILE);
 		}
 	}
 

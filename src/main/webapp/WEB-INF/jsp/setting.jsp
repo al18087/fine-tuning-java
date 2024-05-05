@@ -20,6 +20,12 @@
 		<br>
 		<h6>ファインチューニングを行うための情報を入力してください</h6>
 		<br>
+		<div>
+		<% final String message = (String) request.getAttribute("message"); %>
+		<% if (message != null) { %>
+			<label class="h6 text-danger"><%= message %></label>
+		<% } %>
+		</div>
 		<table class="table">
 			<tr>
 				<th>jsonlファイル</th>
