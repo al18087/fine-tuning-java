@@ -87,9 +87,9 @@ public class TrainingJsonFile {
 	 */
 	private static List<String> getInputStatements() {
 		return Arrays.asList(
-				"指定された「書類ID」と「フォームコード」を条件に、書類検索をして、「書類ID」,「書類状態」,「書類の申請ユーザのユーザコード」を返してください",
-				"指定された「書類ID」と「フォームコード」で書類検索をし、「書類ID」,「書類状態」,「書類の申請ユーザのユーザコード」を取得する処理を実装してください",
-				"「書類ID」と「フォームコード」を条件に書類検索をして、「書類ID」,「書類状態」,「書類の申請ユーザコード」を取得してください"
+				"aaaa",
+				"bbbb",
+				"cccc"
 				);
 	}
 }
