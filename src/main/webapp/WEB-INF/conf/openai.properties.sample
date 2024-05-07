@@ -1,8 +1,8 @@
-openai_api_key = "sk-xxxxx"
+openai_api_key = sk-xxxxx
 
 # learned_model
-learned_model_name = "test-model"
+learned_model_name = test-model
 echo = true
 max_token_num = 2048
 temperature = 0.9
-suffix = "test-suffix"
+suffix = test-suffix
