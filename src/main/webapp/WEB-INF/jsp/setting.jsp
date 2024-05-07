@@ -13,7 +13,7 @@
 	href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
 	crossorigin="anonymous">
 <link rel="stylesheet" href="/WEB-INF/css/base.css">
-<title>source code Copilot</title>
+<title>fine-tuning-java</title>
 </head>
 <body class="container">
 	<form action="<%= request.getContextPath() %>/Setting?action=fine-tuning" enctype="multipart/form-data" method="post">

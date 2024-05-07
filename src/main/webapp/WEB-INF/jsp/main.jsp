@@ -9,7 +9,7 @@
 	href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
 	crossorigin="anonymous">
 <link rel="stylesheet" href="/WEB-INF/css/base.css">
-<title>source code Copilot</title>
+<title>fine-tuning-java</title>
 </head>
 <body class="container">
 	<header>
@@ -25,7 +25,7 @@
 				<td><textarea name="user-content" placeholder="お手伝いをします" cols="100" rows="10"></textarea></td>
 			</tr>
 		</table>
-		<input type="submit" value="コードを生成" class="btn btn-dark">
+		<input type="submit" value="推論" class="btn btn-dark">
 	</form>
 	<br><br>
 	<table class="table">
